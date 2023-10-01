@@ -1,0 +1,14 @@
+# 代理配置
+PROXY:
+    proxy: true
+    proxy_url: http://127.0.0.1:10809
+
+# 数据库配置
+DATABASE:
+    database: sqlite # 也不打算写其他的
+    database_file: Ayachi.db
+
+# BOT配置
+TELEGRAM:
+    admin_id: 1379194088
+    bot_token: 6402970963:AAFsKMiCXtI5MORF5rlobhbPnR7Rui5ylF0
