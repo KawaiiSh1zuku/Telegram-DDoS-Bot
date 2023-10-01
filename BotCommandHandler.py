@@ -11,7 +11,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text="欢迎使用 Ayachi Network Stresser\n发送 /help 查看帮助\n新用户发送 /register 注册")
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="*Ayachi Network Stresser*\n/attack \\- 提交任务\n/methods \\- 方法列表\n/my \\- 用户信息\n/checkin \\- 签到", parse_mode=constants.ParseMode.MARKDOWN_V2)
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="*Ayachi Network Stresser*\n/attack \\- 提交任务\n/methods \\- 方法列表\n/my \\- 用户信息\n/checkin \\- 签到\n\n*Coded with ❤ by @KawaiiSh1zuku*", parse_mode=constants.ParseMode.MARKDOWN_V2)
+
+async def admin_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="*Ayachi Network Stresser 管理员命令*\n/ban \\- 封禁用户\n/set_credit \\- 设置用户积分\n/set_cooldown \\- 设置用户冷却时长\n\n*Coded with ❤ by @KawaiiSh1zuku*", parse_mode=constants.ParseMode.MARKDOWN_V2)
 
 async def register(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
@@ -56,6 +59,19 @@ async def admin_set_credit(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = context.args[0]
         credit = context.args[1]
         if(botdb.admin_set_credit(telegram_id, user_id, credit)):
+            response_text = "设置成功"
+        else:
+            response_text = "用户未注册或你无权操作"
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=response_text)
+
+async def admin_set_cooldown(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    telegram_id = update.effective_user.id
+    if len(context.args) != 2:
+        response_text = "命令用法: /set_cooldown user_id cooldown (second)"
+    else:
+        user_id = context.args[0]
+        cooldown = context.args[1]
+        if(botdb.admin_set_cooldown(telegram_id, user_id, cooldown)):
             response_text = "设置成功"
         else:
             response_text = "用户未注册或你无权操作"

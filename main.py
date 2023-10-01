@@ -44,6 +44,8 @@ if __name__ == '__main__':
     application.add_handler(ban_handler)
     set_credit_handler = CommandHandler('set_credit', BotCommandHandler.admin_set_credit)
     application.add_handler(set_credit_handler)
+    admin_handler = CommandHandler('admin', BotCommandHandler.admin_help)
+    application.add_handler(admin_handler)
 
     # 用户命令
     start_handler = CommandHandler('start', BotCommandHandler.start)

@@ -102,6 +102,18 @@ class BotDatabase:
         else:
             return False
 
+    def admin_set_cooldown(self, telegram_id, user_id, cooldown):
+        if (telegram_id == admin_id):
+            if (self.check_user_status(user_id)):
+                ban_sql = f"UPDATE user SET cooldown = {cooldown} WHERE telegram_id = {user_id}"
+                self.curser.execute(ban_sql)
+                self.conn.commit()
+                return True
+            else:
+                return False
+        else:
+            return False
+
     def get_methods(self):
         search_sql = f"SELECT name, description, visible FROM method"
         result = self.curser.execute(search_sql)
