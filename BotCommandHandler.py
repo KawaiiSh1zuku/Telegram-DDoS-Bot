@@ -38,21 +38,27 @@ async def user_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def admin_ban_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
     telegram_id = update.effective_user.id
-    user_id = context.args[0]
-    if(botdb.admin_ban_user(telegram_id, user_id)):
-        response_text = "封禁成功"
+    if len(context.args) != 1:
+        response_text = "命令用法: /ban user_id"
     else:
-        response_text = "用户未注册或你无权操作"
+        user_id = context.args[0]
+        if(botdb.admin_ban_user(telegram_id, user_id)):
+            response_text = "封禁成功"
+        else:
+            response_text = "用户未注册或你无权操作"
     await context.bot.send_message(chat_id=update.effective_chat.id, text=response_text)
 
 async def admin_set_credit(update: Update, context: ContextTypes.DEFAULT_TYPE):
     telegram_id = update.effective_user.id
-    user_id = context.args[0]
-    credit = context.args[1]
-    if(botdb.admin_set_credit(telegram_id, user_id, credit)):
-        response_text = "设置成功"
+    if len(context.args) != 2:
+        response_text = "命令用法: /set_credit user_id credit"
     else:
-        response_text = "用户未注册或你无权操作"
+        user_id = context.args[0]
+        credit = context.args[1]
+        if(botdb.admin_set_credit(telegram_id, user_id, credit)):
+            response_text = "设置成功"
+        else:
+            response_text = "用户未注册或你无权操作"
     await context.bot.send_message(chat_id=update.effective_chat.id, text=response_text)
 
 async def methods(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -61,9 +67,18 @@ async def methods(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def attack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     telegram_id = update.effective_user.id
-    target = context.args[0].split('&')[0].split('|')[0].split(';')[0] # 屏蔽可能出现注入的字符
-    port = context.args[1]
-    duration = context.args[2]
-    method = context.args[3]
-    response_text = botdb.attack(telegram_id, target, port, duration, method)
+    if len(context.args) != 4:
+        response_text = "命令用法: /attack 目标 端口 时间 模式"
+    else:
+        target = context.args[0].strip().split('&')[0].split('|')[0].split(';')[0].split('$')[0].split('>')[0].split('<')[0] # 屏蔽可能出现注入的字符
+        port = context.args[1]
+        duration = context.args[2]
+        method = context.args[3]
+        sql_ban = "~!@#$%^&*()+*/<>,.[]\/"
+        response_text = ""
+        for i in sql_ban:
+            if i in method:
+                response_text = "不合法的模式"
+                break
+        response_text = botdb.attack(telegram_id, target, port, duration, method)
     await context.bot.send_message(chat_id=update.effective_chat.id, text=response_text, parse_mode=constants.ParseMode.MARKDOWN_V2)

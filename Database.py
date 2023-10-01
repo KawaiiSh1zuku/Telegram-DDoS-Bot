@@ -167,7 +167,7 @@ class BotDatabase:
             result = self.curser.execute(search_sql)
             if (result.fetchone()["COUNT(*)"] != 0):
                 if(self.check_blacklist(target)):
-                    search_sql = f"SELECT api_url, token FROM method WHERE name = '{method}'"
+                    search_sql = f"SELECT api_url, token FROM method WHERE name = '{method}'" # 这个函数所有和method有关的sql语句都可能会被注入 再想办法
                     result = self.curser.execute(search_sql)
                     res = result.fetchone()
                     apiurl = res["api_url"]
