@@ -14,7 +14,7 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text="*Ayachi Network Stresser*\n/attack \\- 提交任务\n/methods \\- 方法列表\n/my \\- 用户信息\n/checkin \\- 签到\n\n*Coded with ❤ by @KawaiiSh1zuku*", parse_mode=constants.ParseMode.MARKDOWN_V2)
 
 async def admin_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="*Ayachi Network Stresser 管理员命令*\n/ban \\- 封禁用户\n/set_credit \\- 设置用户积分\n/set_cooldown \\- 设置用户冷却时长\n\n*Coded with ❤ by @KawaiiSh1zuku*", parse_mode=constants.ParseMode.MARKDOWN_V2)
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="*Ayachi Network Stresser 管理员命令*\n/ban \\- 封禁用户\n/set\\_credit \\- 设置用户积分\n/set\\_cooldown \\- 设置用户冷却时长\n\n*Coded with ❤ by @KawaiiSh1zuku*", parse_mode=constants.ParseMode.MARKDOWN_V2)
 
 async def register(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
@@ -96,5 +96,6 @@ async def attack(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if i in method:
                 response_text = "不合法的模式"
                 break
-        response_text = botdb.attack(telegram_id, target, port, duration, method)
+            else:
+                response_text = botdb.attack(telegram_id, target, port, duration, method)
     await context.bot.send_message(chat_id=update.effective_chat.id, text=response_text, parse_mode=constants.ParseMode.MARKDOWN_V2)

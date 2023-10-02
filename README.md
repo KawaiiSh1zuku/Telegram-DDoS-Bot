@@ -7,6 +7,7 @@
 - pywget
 - requests
 - psutils
+- python-telegram-bot[job-queue]
 
 用法：修改`api.py`内的方法为你自己的，放到你的后端服务器上并开放端口。
 

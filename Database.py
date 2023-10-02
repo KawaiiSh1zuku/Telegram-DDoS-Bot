@@ -177,46 +177,49 @@ class BotDatabase:
         if (self.check_user_status(telegram_id)):
             search_sql = f"SELECT COUNT(*) FROM method WHERE name = '{method}'"
             result = self.curser.execute(search_sql)
-            if (result.fetchone()["COUNT(*)"] != 0):
-                if(self.check_blacklist(target)):
-                    search_sql = f"SELECT api_url, token FROM method WHERE name = '{method}'" # 这个函数所有和method有关的sql语句都可能会被注入 再想办法
-                    result = self.curser.execute(search_sql)
-                    res = result.fetchone()
-                    apiurl = res["api_url"]
-                    token = res["token"]
-                    search_sql = f"SELECT credit, last_finish_time, cooldown FROM user WHERE telegram_id = {telegram_id}"
-                    result = self.curser.execute(search_sql)
-                    res = result.fetchone()
-                    credit = res["credit"]
-                    last_finish_time = res["last_finish_time"]
-                    cooldown = res["cooldown"]
-                    current_timestamp = int(datetime.datetime.now().timestamp())
-                    time_difference = current_timestamp - last_finish_time
-                    if time_difference <= cooldown:
-                        finish_timestamp = last_finish_time + cooldown
-                        utc_time = datetime.datetime.utcfromtimestamp(finish_timestamp)
-                        utc8_time = utc_time + datetime.timedelta(hours=8)
-                        formatted_time = utc8_time.strftime("%Y\\-%m\\-%d %H:%M:%S")
-                        response = f"*🚫提交失败🚫*\n冷却时间未结束\n结束时间：{formatted_time}"
-                        return response
-                    if credit < int(duration):
-                        response = "*🚫提交失败🚫*\n积分不足"
-                        return response
-                    else:
-                        response = send_attack(apiurl, target, port, duration, token)
-                        if "成功" in response:
-                            credit_sql = f"UPDATE user SET credit = credit - {int(duration)} WHERE telegram_id = {telegram_id}"
-                            self.curser.execute(credit_sql)
-                            current_timestamp = int(datetime.datetime.now().timestamp())
-                            finish_timestamp = current_timestamp + cooldown
-                            cooldown_sql = f"UPDATE user SET last_finish_time = {finish_timestamp} WHERE telegram_id = {telegram_id}"
-                            self.curser.execute(cooldown_sql)
-                            self.conn.commit()
-                        return response
-                else:
-                    response = "*🚫提交失败🚫*\n目标命中黑名单"
+            if (int(duration) > int(config.USER.max_attack_duration)):
+                response = f"*🚫提交失败🚫*\n超出设置的最大攻击时长: `{config.DATABASE.max_attack_duration}`"
             else:
-                response = "*🚫提交失败🚫*\n方法不存在"
+                if (result.fetchone()["COUNT(*)"] != 0):
+                    if(self.check_blacklist(target)):
+                        search_sql = f"SELECT api_url, token FROM method WHERE name = '{method}'" # 这个函数所有和method有关的sql语句都可能会被注入 再想办法
+                        result = self.curser.execute(search_sql)
+                        res = result.fetchone()
+                        apiurl = res["api_url"]
+                        token = res["token"]
+                        search_sql = f"SELECT credit, last_finish_time, cooldown FROM user WHERE telegram_id = {telegram_id}"
+                        result = self.curser.execute(search_sql)
+                        res = result.fetchone()
+                        credit = res["credit"]
+                        last_finish_time = res["last_finish_time"]
+                        cooldown = res["cooldown"]
+                        current_timestamp = int(datetime.datetime.now().timestamp())
+                        time_difference = current_timestamp - last_finish_time
+                        if time_difference <= cooldown:
+                            finish_timestamp = last_finish_time + cooldown
+                            utc_time = datetime.datetime.utcfromtimestamp(finish_timestamp)
+                            utc8_time = utc_time + datetime.timedelta(hours=8)
+                            formatted_time = utc8_time.strftime("%Y\\-%m\\-%d %H:%M:%S")
+                            response = f"*🚫提交失败🚫*\n冷却时间未结束\n结束时间：{formatted_time}"
+                            return response
+                        if credit < int(duration):
+                            response = "*🚫提交失败🚫*\n积分不足"
+                            return response
+                        else:
+                            response = send_attack(apiurl, target, port, duration, token)
+                            if "成功" in response:
+                                credit_sql = f"UPDATE user SET credit = credit - {int(duration)} WHERE telegram_id = {telegram_id}"
+                                self.curser.execute(credit_sql)
+                                current_timestamp = int(datetime.datetime.now().timestamp())
+                                finish_timestamp = current_timestamp + cooldown
+                                cooldown_sql = f"UPDATE user SET last_finish_time = {finish_timestamp} WHERE telegram_id = {telegram_id}"
+                                self.curser.execute(cooldown_sql)
+                                self.conn.commit()
+                            return response
+                    else:
+                        response = "*🚫提交失败🚫*\n目标命中黑名单"
+                else:
+                    response = "*🚫提交失败🚫*\n方法不存在"
         else:
             response = "未注册或被封禁用户"
         return response

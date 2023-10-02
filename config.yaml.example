@@ -12,3 +12,7 @@ DATABASE:
 TELEGRAM:
     admin_id: 1379194088
     bot_token: 6402970963:AAFsKMiCXtI5MORF5rlobhbPnR7Rui5ylF0
+	
+# 用户配置
+USER:
+    max_attack_duration: 120

@@ -10,6 +10,8 @@ class Config:
     class TELEGRAM:
         admin_id = 1379194088
         bot_token = None
+    class USER:
+        max_attack_duration = 120
 
     class __ConfigSection:
         def __init__(self, section_dict):
