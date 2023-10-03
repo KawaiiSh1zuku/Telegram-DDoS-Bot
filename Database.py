@@ -173,16 +173,17 @@ class BotDatabase:
                     return response
             except Exception:
                 response = "*🚫提交失败🚫*\n任务因未知原因提交失败"
-            return response
-        if (self.check_user_status(telegram_id)):
+                return response
+
+        if self.check_user_status(telegram_id):
             search_sql = f"SELECT COUNT(*) FROM method WHERE name = '{method}'"
             result = self.curser.execute(search_sql)
-            if (int(duration) > int(config.USER.max_attack_duration)):
+            if int(duration) > int(config.USER.max_attack_duration):
                 response = f"*🚫提交失败🚫*\n超出设置的最大攻击时长: `{config.DATABASE.max_attack_duration}`"
             else:
-                if (result.fetchone()["COUNT(*)"] != 0):
-                    if(self.check_blacklist(target)):
-                        search_sql = f"SELECT api_url, token FROM method WHERE name = '{method}'" # 这个函数所有和method有关的sql语句都可能会被注入 再想办法
+                if result.fetchone()["COUNT(*)"] != 0:
+                    if self.check_blacklist(target):
+                        search_sql = f"SELECT api_url, token FROM method WHERE name = '{method}'"
                         result = self.curser.execute(search_sql)
                         res = result.fetchone()
                         apiurl = res["api_url"]
@@ -215,7 +216,8 @@ class BotDatabase:
                                 cooldown_sql = f"UPDATE user SET last_finish_time = {finish_timestamp} WHERE telegram_id = {telegram_id}"
                                 self.curser.execute(cooldown_sql)
                                 self.conn.commit()
-                            return response
+                            else:
+                                return response
                     else:
                         response = "*🚫提交失败🚫*\n目标命中黑名单"
                 else:

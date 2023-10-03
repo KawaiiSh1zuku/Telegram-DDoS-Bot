@@ -92,10 +92,15 @@ async def attack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         method = context.args[3]
         sql_ban = "~!@#$%^&*()+*/<>,.[]\/"
         response_text = ""
+        isGoodSQL = False
         for i in sql_ban:
             if i in method:
-                response_text = "不合法的模式"
+                isGoodSQL = False
                 break
             else:
-                response_text = botdb.attack(telegram_id, target, port, duration, method)
+                isGoodSQL = True
+        if isGoodSQL:
+            response_text = botdb.attack(telegram_id, target, port, duration, method)
+        else:
+            response_text = "不合法的模式"
     await context.bot.send_message(chat_id=update.effective_chat.id, text=response_text, parse_mode=constants.ParseMode.MARKDOWN_V2)
