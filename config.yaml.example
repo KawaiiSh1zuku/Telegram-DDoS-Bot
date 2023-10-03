@@ -16,3 +16,4 @@ TELEGRAM:
 # 用户配置
 USER:
     max_attack_duration: 120
+    checkin_credit: 120

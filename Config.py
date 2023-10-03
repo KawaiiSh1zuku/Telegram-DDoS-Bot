@@ -12,6 +12,7 @@ class Config:
         bot_token = None
     class USER:
         max_attack_duration = 120
+        checkin_credit = 120
 
     class __ConfigSection:
         def __init__(self, section_dict):

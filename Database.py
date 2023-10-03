@@ -55,10 +55,10 @@ class BotDatabase:
                 current_timestamp = int(datetime.datetime.now().timestamp())
                 sign_sql = f"UPDATE user SET last_signed_time = {current_timestamp} WHERE telegram_id = {telegram_id}"
                 self.curser.execute(sign_sql)
-                credit_sql = f"UPDATE user SET credit = credit + 120 WHERE telegram_id = {telegram_id}"
+                credit_sql = f"UPDATE user SET credit = credit + {str(config.USER.checkin_credit)} WHERE telegram_id = {telegram_id}"
                 self.curser.execute(credit_sql)
                 self.conn.commit()
-                return ('''*🎉签到成功🎉*\n您的积分已增加 120 点''')
+                return (f'''*🎉签到成功🎉*\n您的积分已增加 {str(config.USER.checkin_credit)} 点''')
             else:
                 return ('''*🚫签到失败🚫*\n一天只能签到一次哦''')
         else:
